@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.lixiong'
@@ -12,10 +12,10 @@ android {
         targetSdkVersion 30
 
     }
-    buildFeatures{
+   /* buildFeatures{
         //noinspection DataBindingWithoutKapt
         dataBinding = true
-    }
+    }*/
     buildTypes {
 
         debug {
@@ -40,8 +40,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+//    implementation fileTree(include: ['*.jar'], dir: 'libs')
+//    implementation 'androidx.appcompat:appcompat:1.5.1'
     compileOnly 'com.github.lepiejh:android-framework:v2.2.79'
-    compileOnly 'androidx.constraintlayout:constraintlayout:2.1.4'
+//    compileOnly 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
