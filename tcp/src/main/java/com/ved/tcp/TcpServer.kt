@@ -5,7 +5,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.math.BigInteger
-import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -58,9 +57,7 @@ class TcpServer private constructor() {
 
     private fun executeOneTask(requestBeen: RequestEntity,port:Int) {
         try {
-            serverSocket = ServerSocket()
-            serverSocket?.reuseAddress = true
-            serverSocket?.bind(InetSocketAddress(port))
+            serverSocket = ServerSocket(port)
             socket = serverSocket?.accept()
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
