@@ -42,6 +42,6 @@ android {
 dependencies {
 //    implementation fileTree(include: ['*.jar'], dir: 'libs')
 //    implementation 'androidx.appcompat:appcompat:1.5.1'
-    compileOnly 'com.github.lepiejh:android-framework:v2.2.79'
+    compileOnly 'com.github.lepiejh:android-framework:v2.2.114'
 //    compileOnly 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
