@@ -1,5 +1,6 @@
 package com.ved.tcp
 
+import com.ved.framework.utils.KLog
 import com.ved.framework.utils.StringUtils
 import java.io.IOException
 import java.io.InputStream
@@ -8,6 +9,9 @@ import java.math.BigInteger
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 class TcpServer private constructor() {
     private var hasStart = false
@@ -16,7 +20,7 @@ class TcpServer private constructor() {
     var requestTaskManager = RequestManager()
     private var serverSocket: ServerSocket? = null
     private var socket: Socket? = null
-    private val timer = Timer()
+    private var heartbeatTimer: ScheduledExecutorService? = null
     private var timerTask: TimerTask? = null
 
     companion object {
@@ -39,15 +43,18 @@ class TcpServer private constructor() {
                 while (true) {
                     val pollTask = requestTaskManager.pollTask()
                     if (pollTask != null) {
-                        if (timerTask != null) {
-                            timerTask?.cancel()
+                        stopTimer()
+                        if (heartbeatTimer == null || !(heartbeatTimer?.isShutdown == false && heartbeatTimer?.isTerminated == false)){
+                            heartbeatTimer = Executors.newScheduledThreadPool(5)
                         }
-                        timerTask = object : TimerTask() {
-                            override fun run() {
-                                stopServer()
+                        if (timerTask == null) {
+                            timerTask = object : TimerTask() {
+                                override fun run() {
+                                    stopServer()
+                                }
                             }
                         }
-                        timer.schedule(timerTask, 3000)
+                        heartbeatTimer?.scheduleAtFixedRate(timerTask, 0, 3, TimeUnit.SECONDS)
                         executeOneTask(pollTask,port)
                     }
                 }
@@ -113,5 +120,25 @@ class TcpServer private constructor() {
         }
         socket = null
         serverSocket = null
+    }
+
+    fun stopTimer() {
+        if (timerTask != null) {
+            timerTask?.cancel()
+            timerTask = null
+        }
+        if (heartbeatTimer != null) {
+            heartbeatTimer?.shutdown()
+            try {
+                // 等待线程池终止
+                if (heartbeatTimer?.awaitTermination(1, TimeUnit.SECONDS) == false) {
+                    heartbeatTimer?.shutdownNow() // 强制终止
+                }
+            } catch (e: InterruptedException) {
+                KLog.e( "Heartbeat shutdown interrupted :  ${e.message}")
+                heartbeatTimer?.shutdownNow()
+            }
+            heartbeatTimer = null
+        }
     }
 }
