@@ -18,7 +18,7 @@ class RequestManager {
     private fun doAddTask(arrayList: ArrayList<RequestEntity?>, requestBeen: RequestEntity) {
         synchronized(taskLock) {
             for (i in arrayList.indices) {
-                if (requestBeen.reqData == arrayList[i]!!.reqData) {
+                if (requestBeen.reqData == arrayList[i]?.reqData) {
                     arrayList.removeAt(i)
                     break
                 }
