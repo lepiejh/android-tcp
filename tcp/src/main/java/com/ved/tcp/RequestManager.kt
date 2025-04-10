@@ -1,5 +1,6 @@
 package com.ved.tcp
 
+import com.ved.framework.proguard.NotProguard
 import java.util.ArrayList
 
 class RequestManager {
@@ -33,6 +34,7 @@ class RequestManager {
         return task
     }
 
+    @NotProguard
     fun cancelSameTask() {
         synchronized(taskLock) {
             tasks.clear()

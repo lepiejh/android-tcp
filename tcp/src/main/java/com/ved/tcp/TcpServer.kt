@@ -1,5 +1,6 @@
 package com.ved.tcp
 
+import com.ved.framework.proguard.NotProguard
 import com.ved.framework.utils.KLog
 import com.ved.framework.utils.StringUtils
 import java.io.IOException
@@ -17,6 +18,7 @@ class TcpServer private constructor() {
     private var hasStart = false
     private var `is`: InputStream? = null
     private var os: OutputStream? = null
+    @NotProguard
     var requestTaskManager = RequestManager()
     private var serverSocket: ServerSocket? = null
     private var socket: Socket? = null
