@@ -1,7 +1,5 @@
 package com.ved.tcp
 
-import com.ved.framework.proguard.NotProguard
-
 class RequestManager {
     private val firstTasks: ArrayList<RequestEntity?> = ArrayList<RequestEntity?>()
     private val taskLock = "taskLock"
@@ -33,7 +31,6 @@ class RequestManager {
         return task
     }
 
-    @NotProguard
     fun cancelSameTask() {
         synchronized(taskLock) {
             tasks.clear()
