@@ -19,18 +19,12 @@ android {
     buildTypes {
 
         debug {
-            zipAlignEnabled true
-            shrinkResources true
             minifyEnabled true
-            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
-            zipAlignEnabled true
-            shrinkResources true
             minifyEnabled true
-            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
