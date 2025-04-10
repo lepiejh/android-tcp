@@ -35,39 +35,9 @@
 -dontwarn okhttp3.**
 -dontwarn okio.**
 
-#RxJava RxAndroid
--dontwarn rx.*
--dontwarn sun.misc.**
-
--keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
-   long producerIndex;
-   long consumerIndex;
-}
-
-#RxLifecycle
--keep class com.trello.rxlifecycle2.** { *; }
--keep interface com.trello.rxlifecycle2.** { *; }
--dontwarn com.trello.rxlifecycle2.**
-
-#RxPermissions
--keep class com.tbruyelle.rxpermissions2.** { *; }
--keep interface com.tbruyelle.rxpermissions2.** { *; }
-
-#material-dialogs
--keep class com.afollestad.materialdialogs.** { *; }
--dontwarn om.afollestad.materialdialogs.**
-
 #=====================bindingcollectionadapter=====================
 -keep class me.tatarka.bindingcollectionadapter.** { *; }
 -dontwarn me.tatarka.bindingcollectionadapter.**
-#native方法不被混淆
--keepclasseswithmembernames class * {
-    native <methods>;
-}
-#Parcelable 不被混淆
--keep class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator *;
-}
 #Serializable 不被混淆
 -keepnames class * implements java.io.Serializable
 #Serializable 不被混淆并且enum 类也不被混淆
@@ -84,11 +54,6 @@
 }
 -keepclassmembers class * {
     public void *ButtonClicked(android.view.View);
-}
-#保持类中的所有方法名
--keepclassmembers class * {
-    public <methods>;
-    private <methods>;
 }
 
 #混淆包路径
@@ -157,23 +122,6 @@
 -keep class com.gyf.immersionbar.* {*;}
  -dontwarn com.gyf.immersionbar.**
 
- #tkrefreshlayout
- -keep class com.lcodecore.tkrefreshlayout.** { *; }
- -dontwarn com.lcodecore.tkrefreshlayout.**
-
- #support
- -keep class android.support.** { *; }
- -keep interface android.support.** { *; }
- -dontwarn android.support.**
-
- #databinding
- -keep class android.databinding.** { *; }
- -dontwarn android.databinding.**
-
- #annotation
- -keep class android.support.annotation.** { *; }
- -keep interface android.support.annotation.** { *; }
-
  #retrofit
  -dontwarn retrofit2.**
  -keep class retrofit2.** { *; }
@@ -188,17 +136,6 @@
      **[] $VALUES;
      public *;
  }
-
- #okhttp
- -keepattributes Signature
- -keepattributes *Annotation*
- -keep class com.squareup.okhttp.** { *; }
- -keep interface com.squareup.okhttp.** { *; }
- -keep class okhttp3.** { *; }
- -keep interface okhttp3.** { *; }
- -dontwarn com.squareup.okhttp.**
- -dontwarn okhttp3.**
- -dontwarn okio.**
 
  #RxJava RxAndroid
  -dontwarn rx.*
@@ -221,10 +158,6 @@
  #material-dialogs
  -keep class com.afollestad.materialdialogs.** { *; }
  -dontwarn om.afollestad.materialdialogs.**
-
- #=====================bindingcollectionadapter=====================
- -keep class me.tatarka.bindingcollectionadapter.** { *; }
- -dontwarn me.tatarka.bindingcollectionadapter.**
  #native方法不被混淆
  -keepclasseswithmembernames class * {
      native <methods>;
@@ -232,20 +165,6 @@
  #Parcelable 不被混淆
  -keep class * implements android.os.Parcelable {
    public static final android.os.Parcelable$Creator *;
- }
- #Serializable 不被混淆
- -keepnames class * implements java.io.Serializable
- #Serializable 不被混淆并且enum 类也不被混淆
- -keepclassmembers class * implements java.io.Serializable {
-     static final long serialVersionUID;
-     private static final java.io.ObjectStreamField[] serialPersistentFields;
-     !static !transient <fields>;
-     !private <fields>;
-     !private <methods>;
-     private void writeObject(java.io.ObjectOutputStream);
-     private void readObject(java.io.ObjectInputStream);
-     java.lang.Object writeReplace();
-     java.lang.Object readResolve();
  }
  #保持枚举 enum 类不被混淆 如果混淆报错，建议直接使用上面的 -keepclassmembers class * implements java.io.Serializable即可
  -keepclassmembers enum * {
@@ -256,12 +175,6 @@
  -keepclassmembers class **.R$* {
      public static <fields>;
  }
- #保持类中的所有方法名
- -keepclassmembers class * {
-     public <methods>;
-     private <methods>;
- }
- -keepclassmembers class com.ved.tcp.Request.** { *; }
  -keep class **.R$* {
   *;
  }
@@ -275,3 +188,4 @@
  -keepclassmembers class * {
      void *(**On*Event);
  }
+  -keep class com.ved.tcp.Request.** { *; }

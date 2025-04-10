@@ -1,7 +1,6 @@
 package com.ved.tcp
 
 import com.ved.framework.proguard.NotProguard
-import java.util.ArrayList
 
 class RequestManager {
     private val firstTasks: ArrayList<RequestEntity?> = ArrayList<RequestEntity?>()
