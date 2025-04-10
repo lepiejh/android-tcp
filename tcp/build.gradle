@@ -19,12 +19,18 @@ android {
     buildTypes {
 
         debug {
-            minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true
+            minifyEnabled true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
-            minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true
+            minifyEnabled true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -37,10 +43,21 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    sourceSets {
+        main {
+            /*res.srcDirs = [
+                    'src/main/res',
+                    'src/main/res/layout/DevMgtUI',
+                    'src/main/res/layout/BusinessUI'
+            ]*/
+            jniLibs.srcDir 'libs'
+        }
+    }
 }
 
 dependencies {
-//    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 //    implementation 'androidx.appcompat:appcompat:1.5.1'
     compileOnly 'com.github.lepiejh:android-mvvm:v0.0.2'
 //    compileOnly 'androidx.constraintlayout:constraintlayout:2.1.4'
