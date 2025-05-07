@@ -31,12 +31,12 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,e:Boolean, s: String?, port:Int,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,e, s, callBack))
-        startServer(port)
+    fun send(z: Boolean,h: Boolean,e:Boolean, s: String?, p:Int,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,e, p,s, callBack))
+        startServer()
     }
 
-    private fun startServer(port:Int) {
+    private fun startServer() {
         if (!hasStart) {
             hasStart = true
             Thread {
@@ -57,16 +57,16 @@ class TcpServer private constructor() {
                             }
                             heartbeatTimer?.scheduleAtFixedRate(timerTask, 0, 3, TimeUnit.SECONDS)
                         }
-                        executeOneTask(pollTask,port)
+                        executeOneTask(pollTask)
                     }
                 }
             }.start()
         }
     }
 
-    private fun executeOneTask(requestBeen: RequestEntity,port:Int) {
+    private fun executeOneTask(requestBeen: RequestEntity) {
         try {
-            serverSocket = ServerSocket(port)
+            serverSocket = ServerSocket(requestBeen.port)
             socket = serverSocket?.accept()
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
