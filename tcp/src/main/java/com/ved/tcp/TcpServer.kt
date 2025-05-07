@@ -31,8 +31,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean, str2: String?, port:Int,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z, str2, callBack))
+    fun send(z: Boolean,h: Boolean,e:Boolean, s: String?, port:Int,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,e, s, callBack))
         startServer(port)
     }
 
@@ -43,18 +43,20 @@ class TcpServer private constructor() {
                 while (true) {
                     val pollTask = requestTaskManager.pollTask()
                     if (pollTask != null) {
-                        stopTimer()
-                        if (heartbeatTimer == null || !(heartbeatTimer?.isShutdown == false && heartbeatTimer?.isTerminated == false)){
-                            heartbeatTimer = Executors.newScheduledThreadPool(5)
-                        }
-                        if (timerTask == null) {
-                            timerTask = object : TimerTask() {
-                                override fun run() {
-                                    stopServer()
+                        stopTimer(pollTask.heartbeat)
+                        if (pollTask.heartbeat) {
+                            if (heartbeatTimer == null || !(heartbeatTimer?.isShutdown == false && heartbeatTimer?.isTerminated == false)){
+                                heartbeatTimer = Executors.newScheduledThreadPool(5)
+                            }
+                            if (timerTask == null) {
+                                timerTask = object : TimerTask() {
+                                    override fun run() {
+                                        stopServer()
+                                    }
                                 }
                             }
+                            heartbeatTimer?.scheduleAtFixedRate(timerTask, 0, 3, TimeUnit.SECONDS)
                         }
-                        heartbeatTimer?.scheduleAtFixedRate(timerTask, 0, 3, TimeUnit.SECONDS)
                         executeOneTask(pollTask,port)
                     }
                 }
@@ -69,7 +71,13 @@ class TcpServer private constructor() {
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
             if (socket != null && socket?.isConnected == true) {
-                os?.write(requestBeen.reqData?.let { BigInteger(it, 16).toByteArray() })
+                os?.write(requestBeen.reqData?.let {
+                    if (requestBeen.hex){
+                        BigInteger(it, 16).toByteArray()
+                    }else{
+                        StringUtils.hexStringToByteArray(it)
+                    }
+                })
                 os?.flush()
             }
             val bArr = ByteArray(10240)
@@ -77,10 +85,11 @@ class TcpServer private constructor() {
                 `is`?.read(bArr)?.let { StringUtils.byteArrayToHexString(charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'),bArr, it) }
             requestBeen.callBack(true, byteArrayToHexString2)
         } catch (e: Exception) {
-            e.printStackTrace()
-            requestBeen.callBack(false, e.message)
+            KLog.e(e.message)
+        } finally {
+            requestBeen.callBack(false, "")
+            stopServer()
         }
-        stopServer()
     }
 
     private fun stopStream() {
@@ -122,23 +131,25 @@ class TcpServer private constructor() {
         serverSocket = null
     }
 
-    fun stopTimer() {
+    fun stopTimer(heartbeat: Boolean) {
         if (timerTask != null) {
             timerTask?.cancel()
             timerTask = null
         }
-        if (heartbeatTimer != null) {
-            heartbeatTimer?.shutdown()
-            try {
-                // 等待线程池终止
-                if (heartbeatTimer?.awaitTermination(1, TimeUnit.SECONDS) == false) {
-                    heartbeatTimer?.shutdownNow() // 强制终止
+        if (heartbeat) {
+            if (heartbeatTimer != null) {
+                heartbeatTimer?.shutdown()
+                try {
+                    // 等待线程池终止
+                    if (heartbeatTimer?.awaitTermination(1, TimeUnit.SECONDS) == false) {
+                        heartbeatTimer?.shutdownNow() // 强制终止
+                    }
+                } catch (e: InterruptedException) {
+                    KLog.e( "Heartbeat shutdown interrupted :  ${e.message}")
+                    heartbeatTimer?.shutdownNow()
                 }
-            } catch (e: InterruptedException) {
-                KLog.e( "Heartbeat shutdown interrupted :  ${e.message}")
-                heartbeatTimer?.shutdownNow()
+                heartbeatTimer = null
             }
-            heartbeatTimer = null
         }
     }
 }
