@@ -94,8 +94,8 @@ class TcpServer private constructor() {
             requestBeen.callBack(true, byteArrayToHexString)
         } catch (e: Exception) {
             KLog.e(e.message)
+            requestBeen.callBack(false, e.message)
         } finally {
-            requestBeen.callBack(false, "")
             stopServer()
         }
     }
