@@ -81,17 +81,17 @@ class TcpServer private constructor() {
                 os?.flush()
             }
             val bArr = ByteArray(if (requestBeen.hex) 10240 else 1024)
-            var byteArrayToHexString = ""
             `is`?.read(bArr)?.let {
                 if (it > 0){
-                    byteArrayToHexString = if (requestBeen.hex){
+                    requestBeen.callBack(true, if (requestBeen.hex){
                         StringUtils.byteArrayToHexString(charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'),bArr, it)
                     }else{
                         StringUtils.byteArrayToHexString(bArr.copyOf(it))
-                    }
+                    })
+                }else{
+                    requestBeen.callBack(false, "no data")
                 }
             }
-            requestBeen.callBack(true, byteArrayToHexString)
         } catch (e: Exception) {
             KLog.e(e.message)
             requestBeen.callBack(false, e.message)
