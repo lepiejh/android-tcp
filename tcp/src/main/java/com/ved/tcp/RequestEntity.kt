@@ -5,7 +5,7 @@ class RequestEntity(
     h: Boolean,
     e:Boolean,
     p:Int,
-    val reqData: String?,
+    val reqData: List<String>?,
     private var callBack: (z: Boolean, s: String?) -> Unit
 ) {
     var isFirst = false

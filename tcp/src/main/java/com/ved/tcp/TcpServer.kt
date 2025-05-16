@@ -8,6 +8,7 @@ import java.io.OutputStream
 import java.math.BigInteger
 import java.net.ServerSocket
 import java.net.Socket
+import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -31,7 +32,7 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,e:Boolean, s: String?, p:Int,callBack: (z: Boolean, s: String?) -> Unit) {
+    fun send(z: Boolean,h: Boolean,e:Boolean, s: List<String>?, p:Int,callBack: (z: Boolean, s: String?) -> Unit) {
         requestTaskManager.addTask(RequestEntity(z,h,e, p,s, callBack))
         startServer()
     }
@@ -66,35 +67,42 @@ class TcpServer private constructor() {
 
     private fun executeOneTask(requestBeen: RequestEntity) {
         try {
-            serverSocket = ServerSocket(requestBeen.port)
-            socket = serverSocket?.accept()
+            serverSocket = ServerSocket(requestBeen.port).apply {
+                soTimeout = 5000 // 设置5秒超时
+                reuseAddress = true
+            }
+            socket = serverSocket?.accept().apply {
+                this?.soTimeout = 5000 // 设置socket读取超时
+            }
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
             if (socket != null && socket?.isConnected == true) {
-                os?.write(requestBeen.reqData?.let {
-                    if (requestBeen.hex){
-                        BigInteger(it, 16).toByteArray()
-                    }else{
-                        StringUtils.hexStringToByteArray(it)
+                if (requestBeen.reqData?.isNotEmpty() == true){
+                    for (data in requestBeen.reqData){
+                        os?.write(if (requestBeen.hex){
+                            BigInteger(data, 16).toByteArray()
+                        }else{
+                            StringUtils.hexStringToByteArray(data)
+                        })
                     }
-                })
+                }
                 os?.flush()
             }
-            val bArr = ByteArray(if (requestBeen.hex) 10240 else 1024)
-            `is`?.read(bArr)?.let {
-                if (it > 0){
-                    requestBeen.callBack(true, if (requestBeen.hex){
-                        StringUtils.byteArrayToHexString(charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'),bArr, it)
-                    }else{
-                        StringUtils.byteArrayToHexString(bArr.copyOf(it))
-                    })
+            val buffer = ByteArray(if (requestBeen.hex) 10240 else 1024)
+            val bytesRead = `is`?.read(buffer) ?: -1
+            if (bytesRead > 0){
+                requestBeen.callBack(true, if (requestBeen.hex){
+                    StringUtils.byteArrayToHexString(charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'),buffer, bytesRead)
                 }else{
-                    requestBeen.callBack(false, "no data")
-                }
+                    StringUtils.byteArrayToHexString(buffer.copyOf(bytesRead))
+                })
+            }else{
+                requestBeen.callBack(false, "No response data")
             }
+        } catch (e: SocketTimeoutException) {
+            requestBeen.callBack(false, "Read timeout")
         } catch (e: Exception) {
-            KLog.e(e.message)
-            requestBeen.callBack(false, e.message)
+            requestBeen.callBack(false, "Error: ${e.message}")
         } finally {
             stopServer()
         }
