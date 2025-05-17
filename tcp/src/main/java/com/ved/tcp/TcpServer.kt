@@ -32,8 +32,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,e:Boolean, s: List<String>?, p:Int,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,e, p,s, callBack))
+    fun send(z: Boolean,h: Boolean,e:Boolean,m:Boolean, s: List<String>?, p:Int,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,e,m,p,s, callBack))
         startServer()
     }
 
@@ -76,28 +76,33 @@ class TcpServer private constructor() {
             }
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
-            if (socket != null && socket?.isConnected == true) {
-                if (requestBeen.reqData?.isNotEmpty() == true){
-                    for (data in requestBeen.reqData){
-                        os?.write(if (requestBeen.hex){
-                            BigInteger(data, 16).toByteArray()
+            if (!requestBeen.multi) {
+                if (socket != null && socket?.isConnected == true) {
+                    if (requestBeen.reqData?.isNotEmpty() == true){
+                        requestBeen.reqData.forEach { data ->
+                            write(requestBeen, data)
+                        }
+                    }
+                    os?.flush()
+                }
+                val response = getResponse(requestBeen)
+                requestBeen.callBack(response != "No response data", response)
+            } else {
+                if (socket != null && socket?.isConnected == true){
+                    if (requestBeen.reqData?.isNotEmpty() == true){
+                        val set = mutableSetOf<String>()
+                        requestBeen.reqData.forEach { data ->
+                            write(requestBeen, data)
+                            os?.flush()   // 每条指令发送后立即刷新
+                            set.add(getResponse(requestBeen))
+                        }
+                        if (set.contains("No response data")){
+                            requestBeen.callBack(false,"No response data")
                         }else{
-                            StringUtils.hexStringToByteArray(data)
-                        })
+                            requestBeen.callBack(true,set.joinToString(","))
+                        }
                     }
                 }
-                os?.flush()
-            }
-            val buffer = ByteArray(if (requestBeen.hex) 10240 else 1024)
-            val bytesRead = `is`?.read(buffer) ?: -1
-            if (bytesRead > 0){
-                requestBeen.callBack(true, if (requestBeen.hex){
-                    StringUtils.byteArrayToHexString(charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'),buffer, bytesRead)
-                }else{
-                    StringUtils.byteArrayToHexString(buffer.copyOf(bytesRead))
-                })
-            }else{
-                requestBeen.callBack(false, "No response data")
             }
         } catch (e: SocketTimeoutException) {
             requestBeen.callBack(false, "Read timeout")
@@ -106,6 +111,51 @@ class TcpServer private constructor() {
         } finally {
             stopServer()
         }
+    }
+
+    private fun getResponse(requestBeen: RequestEntity): String {
+        val buffer = ByteArray(if (requestBeen.hex) 10240 else 1024)
+        val bytesRead = `is`?.read(buffer) ?: -1
+        var response = ""
+        response = if (bytesRead > 0) {
+            if (requestBeen.hex) {
+                StringUtils.byteArrayToHexString(
+                    charArrayOf(
+                        '0',
+                        '1',
+                        '2',
+                        '3',
+                        '4',
+                        '5',
+                        '6',
+                        '7',
+                        '8',
+                        '9',
+                        'A',
+                        'B',
+                        'C',
+                        'D',
+                        'E',
+                        'F'
+                    ), buffer, bytesRead
+                )
+            } else {
+                StringUtils.byteArrayToHexString(buffer.copyOf(bytesRead))
+            }
+        } else {
+            "No response data"
+        }
+        return response
+    }
+
+    private fun write(requestBeen: RequestEntity, data: String) {
+        os?.write(
+            if (requestBeen.hex) {
+                BigInteger(data, 16).toByteArray()
+            } else {
+                StringUtils.hexStringToByteArray(data)
+            }
+        )
     }
 
     private fun stopStream() {
