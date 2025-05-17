@@ -85,7 +85,7 @@ class TcpServer private constructor() {
                     }
                     os?.flush()
                 }
-                val response = getResponse(requestBeen)
+                val response = read(requestBeen)
                 requestBeen.callBack(response != "No response data", response)
             } else {
                 if (socket != null && socket?.isConnected == true){
@@ -94,7 +94,7 @@ class TcpServer private constructor() {
                         requestBeen.reqData.forEach { data ->
                             write(requestBeen, data)
                             os?.flush()   // 每条指令发送后立即刷新
-                            set.add(getResponse(requestBeen))
+                            set.add(read(requestBeen))
                         }
                         if (set.contains("No response data")){
                             requestBeen.callBack(false,"No response data")
@@ -113,7 +113,7 @@ class TcpServer private constructor() {
         }
     }
 
-    private fun getResponse(requestBeen: RequestEntity): String {
+    private fun read(requestBeen: RequestEntity): String {
         val buffer = ByteArray(if (requestBeen.hex) 10240 else 1024)
         val bytesRead = `is`?.read(buffer) ?: -1
         var response = ""
