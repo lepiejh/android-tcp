@@ -32,8 +32,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,e:Boolean,m:Boolean,t:Int,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,e,m,t,p,s, callBack))
+    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,t:Int,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,t,p,s, callBack))
         startServer()
     }
 
@@ -118,11 +118,11 @@ class TcpServer private constructor() {
     }
 
     private fun read(requestBeen: RequestEntity): String {
-        val buffer = ByteArray(if (requestBeen.hex) 10240 else 1024)
+        val buffer = ByteArray(if (requestBeen.read) 10240 else 1024)
         val bytesRead = `is`?.read(buffer) ?: -1
         var response = ""
         response = if (bytesRead > 0) {
-            if (requestBeen.hex) {
+            if (requestBeen.read) {
                 StringUtils.byteArrayToHexString(
                     charArrayOf(
                         '0',
@@ -154,7 +154,7 @@ class TcpServer private constructor() {
 
     private fun write(requestBeen: RequestEntity, data: String) {
         os?.write(
-            if (requestBeen.hex) {
+            if (requestBeen.write) {
                 BigInteger(data, 16).toByteArray()
             } else {
                 StringUtils.hexStringToByteArray(data)

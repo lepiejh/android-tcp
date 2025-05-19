@@ -3,7 +3,8 @@ package com.ved.tcp
 class RequestEntity(
     z: Boolean,
     h: Boolean,
-    e:Boolean,
+    w:Boolean,
+    r:Boolean,
     m:Boolean,
     t:Int,
     p:Int,
@@ -12,7 +13,8 @@ class RequestEntity(
 ) {
     var isFirst = false
     var heartbeat = false
-    var hex = false
+    var write = false
+    var read = false
     var multi = false
     var timeout = 0
     var port = 0
@@ -20,7 +22,8 @@ class RequestEntity(
     init {
         isFirst = z
         heartbeat = h
-        hex = e
+        write = w
+        read = r
         multi = m
         timeout = t
         port = p
