@@ -32,8 +32,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,e:Boolean,m:Boolean, s: List<String>?, p:Int,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,e,m,p,s, callBack))
+    fun send(z: Boolean,h: Boolean,e:Boolean,m:Boolean,t:Int,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,e,m,t,p,s, callBack))
         startServer()
     }
 
@@ -68,11 +68,15 @@ class TcpServer private constructor() {
     private fun executeOneTask(requestBeen: RequestEntity) {
         try {
             serverSocket = ServerSocket(requestBeen.port).apply {
-                soTimeout = 5000 // 设置5秒超时
+                if (requestBeen.timeout > 0) {
+                    soTimeout = requestBeen.timeout * 1000 // 设置5秒超时
+                }
                 reuseAddress = true
             }
             socket = serverSocket?.accept().apply {
-                this?.soTimeout = 5000 // 设置socket读取超时
+                if (requestBeen.timeout > 0) {
+                    this?.soTimeout = requestBeen.timeout * 1000 // 设置socket读取超时
+                }
             }
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
