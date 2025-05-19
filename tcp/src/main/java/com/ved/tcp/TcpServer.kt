@@ -32,8 +32,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,t:Int,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,t,p,s, callBack))
+    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,t:Int,c:String?,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,t,c,p,s, callBack))
         startServer()
     }
 
@@ -149,7 +149,12 @@ class TcpServer private constructor() {
         } else {
             "No response data"
         }
-        return response
+        if (requestBeen.check?.isNotEmpty() == true){
+            if (!StringUtils.startsWith(response,requestBeen.check)){
+                response =  "No response data"
+            }
+        }
+        return StringUtils.trim(response)
     }
 
     private fun write(requestBeen: RequestEntity, data: String) {
