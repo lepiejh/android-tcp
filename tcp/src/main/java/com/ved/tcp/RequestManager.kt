@@ -2,7 +2,7 @@ package com.ved.tcp
 
 class RequestManager {
     private val firstTasks: ArrayList<RequestEntity?> = ArrayList<RequestEntity?>()
-    private val taskLock = "taskLock"
+    private val taskLock = Any()
     private val tasks: ArrayList<RequestEntity?> = ArrayList<RequestEntity?>()
 
     fun addTask(requestBeen: RequestEntity) {

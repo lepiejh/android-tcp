@@ -23,6 +23,7 @@ class TcpServer private constructor() {
     private var socket: Socket? = null
     private var heartbeatTimer: ScheduledExecutorService? = null
     private var timerTask: TimerTask? = null
+    private val lock = Any()
 
     companion object {
         val INSTANCE: TcpServer by lazy { Holder.INSTANCE }
@@ -47,12 +48,14 @@ class TcpServer private constructor() {
                         stopTimer(pollTask.heartbeat)
                         if (pollTask.heartbeat) {
                             if (heartbeatTimer == null || !(heartbeatTimer?.isShutdown == false && heartbeatTimer?.isTerminated == false)){
-                                heartbeatTimer = Executors.newScheduledThreadPool(5)
+                                heartbeatTimer = Executors.newSingleThreadScheduledExecutor()
                             }
                             if (timerTask == null) {
                                 timerTask = object : TimerTask() {
                                     override fun run() {
-                                        stopServer()
+                                        if (socket?.isConnected != true) {
+                                            stopServer()
+                                        }
                                     }
                                 }
                             }
@@ -185,23 +188,25 @@ class TcpServer private constructor() {
     }
 
     fun stopServer() {
-        stopStream()
-        try {
+        synchronized(lock){
+            stopStream()
             if (socket != null) {
-                socket?.close()
+                try {
+                    socket?.close()
+                } catch (e: IOException) {
+                    KLog.e("Socket close error: ${e.message}")
+                }
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        try {
             if (serverSocket != null) {
-                serverSocket?.close()
+                try {
+                    serverSocket?.close()
+                } catch (e: IOException) {
+                    KLog.e("ServerSocket close error: ${e.message}")
+                }
             }
-        } catch (e2: IOException) {
-            e2.printStackTrace()
+            socket = null
+            serverSocket = null
         }
-        socket = null
-        serverSocket = null
     }
 
     fun stopTimer(heartbeat: Boolean) {
