@@ -108,8 +108,6 @@ class TcpServer private constructor() {
                     }
                 }
             }
-        } catch (e: SocketTimeoutException) {
-            requestBeen.callBack(false, "Read timeout")
         } catch (e: Exception) {
             requestBeen.callBack(false, "Error: ${e.message}")
         } finally {
