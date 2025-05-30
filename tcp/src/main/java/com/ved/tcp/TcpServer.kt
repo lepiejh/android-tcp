@@ -8,7 +8,6 @@ import java.io.OutputStream
 import java.math.BigInteger
 import java.net.ServerSocket
 import java.net.Socket
-import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -33,8 +32,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,t:Int,c:String?,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,t,c,p,s, callBack))
+    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,t:Int,c:String?,u:String?,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,t,c,u,p,s, callBack))
         startServer()
     }
 
@@ -70,16 +69,20 @@ class TcpServer private constructor() {
 
     private fun executeOneTask(requestBeen: RequestEntity) {
         try {
-            serverSocket = ServerSocket(requestBeen.port).apply {
-                if (requestBeen.timeout > 0) {
-                    soTimeout = requestBeen.timeout * 1000 // 设置5秒超时
+            if (requestBeen.url.isNullOrEmpty()){
+                serverSocket = ServerSocket(requestBeen.port).apply {
+                    if (requestBeen.timeout > 0) {
+                        soTimeout = requestBeen.timeout * 1000 // 设置5秒超时
+                    }
+                    reuseAddress = true
                 }
-                reuseAddress = true
-            }
-            socket = serverSocket?.accept().apply {
-                if (requestBeen.timeout > 0) {
-                    this?.soTimeout = requestBeen.timeout * 1000 // 设置socket读取超时
+                socket = serverSocket?.accept().apply {
+                    if (requestBeen.timeout > 0) {
+                        this?.soTimeout = requestBeen.timeout * 1000 // 设置socket读取超时
+                    }
                 }
+            }else{
+                socket = Socket(requestBeen.url, requestBeen.port)
             }
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()

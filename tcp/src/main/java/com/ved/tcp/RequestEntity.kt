@@ -8,6 +8,7 @@ class RequestEntity(
     m:Boolean,
     t:Int,
     c:String?,
+    u:String?,
     p:Int,
     val reqData: List<String>?,
     private var callBack: (z: Boolean, s: String?) -> Unit
@@ -20,6 +21,7 @@ class RequestEntity(
     var timeout = 0
     var port = 0
     var check : String? = null
+    var url : String? = null
 
     init {
         isFirst = z
@@ -29,6 +31,7 @@ class RequestEntity(
         multi = m
         timeout = t
         check = c
+        url = u
         port = p
     }
 
