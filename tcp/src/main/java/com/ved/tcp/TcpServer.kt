@@ -32,8 +32,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,t:Int,c:String?,u:String?,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,t,c,u,p,s, callBack))
+    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,d:Boolean,t:Int,c:String?,u:String?,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,d,t,c,u,p,s, callBack))
         startServer()
     }
 
@@ -89,6 +89,9 @@ class TcpServer private constructor() {
             if (!requestBeen.multi) {
                 if (socket != null && socket?.isConnected == true) {
                     if (requestBeen.reqData?.isNotEmpty() == true){
+                        if (requestBeen.delay){
+                            Thread.sleep(100)
+                        }
                         requestBeen.reqData.forEach { data ->
                             write(requestBeen, data)
                         }
@@ -100,10 +103,13 @@ class TcpServer private constructor() {
             } else {
                 if (socket != null && socket?.isConnected == true){
                     if (requestBeen.reqData?.isNotEmpty() == true){
+                        if (requestBeen.delay){
+                            Thread.sleep(100)
+                        }
                         val set = mutableSetOf<String>()
                         requestBeen.reqData.forEach { data ->
                             write(requestBeen, data)
-                            os?.flush()   // 每条指令发送后立即刷新
+                            os?.flush()
                             set.add(read(requestBeen))
                         }
                         if (set.contains("No response data")){

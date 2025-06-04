@@ -6,6 +6,7 @@ class RequestEntity(
     w:Boolean,
     r:Boolean,
     m:Boolean,
+    d:Boolean,
     t:Int,
     c:String?,
     u:String?,
@@ -18,6 +19,7 @@ class RequestEntity(
     var write = false
     var read = false
     var multi = false
+    var delay = false
     var timeout = 0
     var port = 0
     var check : String? = null
@@ -29,6 +31,7 @@ class RequestEntity(
         write = w
         read = r
         multi = m
+        delay = d
         timeout = t
         check = c
         url = u
