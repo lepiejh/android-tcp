@@ -189,7 +189,7 @@ class TcpServer private constructor() {
         }
     }
 
-    fun shutdownGracefully() {
+    private fun shutdownGracefully() {
         synchronized(lock) {
             // 第一步：停止接受新任务
             executor.shutdown()
