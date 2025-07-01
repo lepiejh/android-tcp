@@ -23,6 +23,7 @@ class TcpServer private constructor() {
     private var heartbeatTimer: ScheduledExecutorService? = null
     private var timerTask: TimerTask? = null
     private val lock = Any()
+    private var isExecuting = false
 
     companion object {
         val INSTANCE: TcpServer by lazy { Holder.INSTANCE }
@@ -68,6 +69,9 @@ class TcpServer private constructor() {
     }
 
     private fun executeOneTask(requestBeen: RequestEntity) {
+        synchronized(lock) {
+            isExecuting = true
+        }
         try {
             if (requestBeen.url.isNullOrEmpty()){
                 serverSocket = ServerSocket(requestBeen.port).apply {
@@ -123,7 +127,16 @@ class TcpServer private constructor() {
         } catch (e: Exception) {
             requestBeen.callBack(false, "Error: ${e.message}")
         } finally {
+            synchronized(lock) {
+                isExecuting = false
+            }
             stopServer()
+        }
+    }
+
+    fun isExecuting(): Boolean {
+        synchronized(lock) {
+            return isExecuting
         }
     }
 
