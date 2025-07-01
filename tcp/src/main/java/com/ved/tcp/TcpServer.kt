@@ -9,6 +9,7 @@ import java.math.BigInteger
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class TcpServer private constructor() {
     private var `is`: InputStream? = null
@@ -93,7 +94,7 @@ class TcpServer private constructor() {
         } catch (e: Exception) {
             requestBeen.callBack(false, "Error: ${e.message}")
         } finally {
-            stopServer()
+            shutdownGracefully()
         }
     }
 
@@ -185,6 +186,32 @@ class TcpServer private constructor() {
             }
             socket = null
             serverSocket = null
+        }
+    }
+
+    fun shutdownGracefully() {
+        synchronized(lock) {
+            // 第一步：停止接受新任务
+            executor.shutdown()
+
+            try {
+                // 第二步：等待现有任务完成
+                if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    // 第三步：如果超时，强制中断所有任务
+                    executor.shutdownNow()
+                    // 再次等待一段时间
+                    if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                        KLog.e("线程池未能正常终止")
+                    }
+                }
+            } catch (e: InterruptedException) {
+                // 如果当前线程被中断，再次尝试中断线程池
+                executor.shutdownNow()
+                Thread.currentThread().interrupt()
+            }
+
+            // 关闭其他资源
+            stopServer()
         }
     }
 }
