@@ -128,6 +128,7 @@ class TcpServer private constructor() {
                 StringUtils.byteArrayToHexString(buffer.copyOf(bytesRead))
             }
         } else {
+            KLog.e(" --- TCP 读取的数据是空的")
             "No response data"
         }
         if (requestBeen.check?.isNotEmpty() == true){
