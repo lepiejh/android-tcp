@@ -54,6 +54,7 @@ class TcpServer private constructor() {
             }else{
                 socket = Socket(requestBeen.url, requestBeen.port)
             }
+            KLog.i(" --- TCP 服务已建立连接")
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
             if (!requestBeen.multi) {
