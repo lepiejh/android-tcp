@@ -54,7 +54,6 @@ class TcpServer private constructor() {
             }else{
                 socket = Socket(requestBeen.url, requestBeen.port)
             }
-            KLog.i(" --- TCP 服务已建立连接")
             `is` = socket?.getInputStream()
             os = socket?.getOutputStream()
             if (!requestBeen.multi) {
@@ -128,7 +127,6 @@ class TcpServer private constructor() {
                 StringUtils.byteArrayToHexString(buffer.copyOf(bytesRead))
             }
         } else {
-            KLog.e(" --- TCP 读取的数据是空的")
             "No response data"
         }
         if (requestBeen.check?.isNotEmpty() == true){
