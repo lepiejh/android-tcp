@@ -7,10 +7,14 @@ class RequestEntity(
     r:Boolean,
     m:Boolean,
     d:Boolean,
+    cc:Boolean,
+    s:Boolean,
     t:Int,
     c:String?,
     u:String?,
     p:Int,
+    dm:Long,
+    sm:Long,
     val reqData: List<String>?,
     private var callBack: (z: Boolean, s: String?) -> Unit
 ) {
@@ -20,8 +24,12 @@ class RequestEntity(
     var read = false
     var multi = false
     var delay = false
+    var crc = false
+    var stop = false
     var timeout = 0
     var port = 0
+    var delayMillis : Long = 0
+    var stopMillis : Long = 0
     var check : String? = null
     var url : String? = null
 
@@ -32,10 +40,14 @@ class RequestEntity(
         read = r
         multi = m
         delay = d
+        crc = cc
+        stop = s
         timeout = t
         check = c
         url = u
         port = p
+        delayMillis = dm
+        stopMillis = sm
     }
 
     fun callBack(z: Boolean, str: String?) {

@@ -27,8 +27,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,d:Boolean,t:Int,c:String?,u:String?,p:Int,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,d,t,c,u,p,s, callBack))
+    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,d:Boolean,cc:Boolean,st:Boolean,t:Int,c:String?,u:String?,p:Int,dm:Long,sm:Long,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,d,cc,st,t,c,u,p,dm,sm,s,callBack))
         executor.execute {
             val pollTask = requestTaskManager.pollTask()
             if (pollTask != null) {
@@ -60,7 +60,7 @@ class TcpServer private constructor() {
                 if (socket != null && socket?.isConnected == true) {
                     if (requestBeen.reqData?.isNotEmpty() == true){
                         if (requestBeen.delay){
-                            Thread.sleep(100)
+                            Thread.sleep(requestBeen.delayMillis)
                         }
                         requestBeen.reqData.forEach { data ->
                             write(requestBeen, data)
@@ -74,13 +74,17 @@ class TcpServer private constructor() {
                 if (socket != null && socket?.isConnected == true){
                     if (requestBeen.reqData?.isNotEmpty() == true){
                         if (requestBeen.delay){
-                            Thread.sleep(100)
+                            Thread.sleep(requestBeen.delayMillis)
                         }
                         val set = mutableSetOf<String>()
-                        requestBeen.reqData.forEach { data ->
+                        requestBeen.reqData.forEachIndexed { index, data ->
                             write(requestBeen, data)
                             os?.flush()
                             set.add(read(requestBeen))
+
+                            if (requestBeen.stop && index != requestBeen.reqData.size - 1) {
+                                Thread.sleep(requestBeen.stopMillis)
+                            }
                         }
                         if (set.contains("No response data")){
                             requestBeen.callBack(false,"No response data")
@@ -138,11 +142,16 @@ class TcpServer private constructor() {
     }
 
     private fun write(requestBeen: RequestEntity, data: String) {
+        val d = if (requestBeen.crc) {
+            "${data}${StringUtils.getCRC(data,"2X")}"
+        }else{
+            data
+        }
         os?.write(
             if (requestBeen.write) {
-                BigInteger(data, 16).toByteArray()
+                BigInteger(d, 16).toByteArray()
             } else {
-                StringUtils.hexStringToByteArray(data)
+                StringUtils.hexStringToByteArray(d)
             }
         )
     }
