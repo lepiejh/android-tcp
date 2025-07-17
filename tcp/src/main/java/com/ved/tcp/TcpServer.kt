@@ -27,8 +27,8 @@ class TcpServer private constructor() {
         val INSTANCE = TcpServer()
     }
 
-    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,d:Boolean,cc:Boolean,st:Boolean,t:Int,c:String?,u:String?,p:Int,dm:Long,sm:Long,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
-        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,d,cc,st,t,c,u,p,dm,sm,s,callBack))
+    fun send(z: Boolean,h: Boolean,w:Boolean,r:Boolean,m:Boolean,d:Boolean,cc:Boolean,st:Boolean,t:Int,c:String?,u:String?,p:Int,ce:Boolean,dm:Long,sm:Long,s: List<String>?,callBack: (z: Boolean, s: String?) -> Unit) {
+        requestTaskManager.addTask(RequestEntity(z,h,w,r,m,d,cc,st,t,c,u,p,ce,dm,sm,s,callBack))
         executor.execute {
             val pollTask = requestTaskManager.pollTask()
             if (pollTask != null) {
@@ -77,11 +77,17 @@ class TcpServer private constructor() {
                             Thread.sleep(requestBeen.delayMillis)
                         }
                         val set = mutableSetOf<String>()
+                        var previousValue: String? = null
                         requestBeen.reqData.forEachIndexed { index, data ->
-                            write(requestBeen, data)
+                            write(requestBeen, if (requestBeen.change && previousValue?.isNotEmpty() == true){
+                                "${data}${if ((StringUtils.hexStringToByteArray(previousValue)[4].toInt() and 0xFF) == 0) "01" else "00"}"
+                            }else{
+                                data
+                            })
                             os?.flush()
-                            set.add(read(requestBeen))
-
+                            val currentValue = read(requestBeen)
+                            set.add(currentValue)
+                            previousValue = currentValue
                             if (requestBeen.stop && index != requestBeen.reqData.size - 1) {
                                 Thread.sleep(requestBeen.stopMillis)
                             }

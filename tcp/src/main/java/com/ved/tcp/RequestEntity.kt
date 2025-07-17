@@ -13,6 +13,7 @@ class RequestEntity(
     c:String?,
     u:String?,
     p:Int,
+    ce:Boolean,
     dm:Long,
     sm:Long,
     val reqData: List<String>?,
@@ -28,6 +29,7 @@ class RequestEntity(
     var stop = false
     var timeout = 0
     var port = 0
+    var change = false
     var delayMillis : Long = 0
     var stopMillis : Long = 0
     var check : String? = null
@@ -46,6 +48,7 @@ class RequestEntity(
         check = c
         url = u
         port = p
+        change = ce
         delayMillis = dm
         stopMillis = sm
     }
