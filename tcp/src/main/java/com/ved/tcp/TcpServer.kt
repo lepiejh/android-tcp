@@ -79,7 +79,7 @@ class TcpServer private constructor() {
                         val set = mutableSetOf<String>()
                         var previousValue: String? = null
                         requestBeen.reqData.forEachIndexed { index, data ->
-                            write(requestBeen, if (requestBeen.change && previousValue?.isNotEmpty() == true){
+                            write(requestBeen, if (requestBeen.change && previousValue?.isNotEmpty() == true && previousValue != "No response data"){
                                 "${data}${if ((StringUtils.hexStringToByteArray(previousValue)[4].toInt() and 0xFF) == 0) "01" else "00"}"
                             }else{
                                 data
