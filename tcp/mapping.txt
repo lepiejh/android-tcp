@@ -1,0 +1,39 @@
+# compiler: R8
+# compiler_version: 2.0.99
+# pg_map_id: 86e19ef
+# common_typos_disable
+com.ved.tcp.BuildConfig -> com.ved.tcp.BuildConfig:
+    7:7:void <clinit>() -> <clinit>
+    6:6:void <init>() -> <init>
+com.ved.tcp.Request -> com.ved.tcp.Request:
+    3:3:void <init>() -> <init>
+com.ved.tcp.RequestManager -> com.ved.tcp.RequestManager:
+    3:6:void <init>() -> <init>
+com.ved.tcp.TcpServer -> com.ved.tcp.TcpServer:
+    java.net.ServerSocket serverSocket -> c
+    java.io.OutputStream os -> b
+    java.io.InputStream is -> a
+    java.net.Socket socket -> d
+    27:27:void <clinit>() -> <clinit>
+    16:16:kotlin.Lazy access$getINSTANCE$delegate$cp() -> <init>
+    16:16:void <init>():16 -> <init>
+    20:20:void setRequestTaskManager(com.ved.tcp.RequestManager) -> <init>
+    20:20:void <init>():20 -> <init>
+    16:16:kotlin.Lazy access$getINSTANCE$delegate$cp() -> <init>
+    16:16:void <init>():16 -> <init>
+    106:123:void stopServer() -> a
+    87:103:void stopStream() -> b
+com.ved.tcp.TcpServer$Companion -> com.ved.tcp.TcpServer$Companion:
+    26:26:void <init>() -> <init>
+com.ved.tcp.TcpServer$Companion$INSTANCE$2 -> com.ved.tcp.TcpServer$Companion$INSTANCE$2:
+    27:27:com.ved.tcp.TcpServer invoke() -> invoke
+    27:27:java.lang.Object invoke() -> invoke
+com.ved.tcp.TcpServer$Holder -> com.ved.tcp.TcpServer$Holder:
+    com.ved.tcp.TcpServer$Holder INSTANCE -> a
+    com.ved.tcp.TcpServer INSTANCE$1 -> b
+    31:31:void <clinit>() -> <clinit>
+    30:30:void <init>() -> <init>
+    31:31:com.ved.tcp.TcpServer getINSTANCE() -> a
+com.ved.tcp.TcpServer$startServer$1$1 -> com.ved.tcp.TcpServer$startServer$1$1:
+    com.ved.tcp.TcpServer this$0 -> a
+    53:54:void run() -> run

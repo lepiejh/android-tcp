@@ -1,0 +1,51 @@
+com.ved.tcp.TcpServer$Companion:
+    public final com.ved.tcp.TcpServer getINSTANCE()
+com.ved.tcp.Request:
+    public final void req(boolean,java.lang.String,int,kotlin.jvm.functions.Function2)
+com.ved.tcp.TcpServer:
+    private final void startServer(int)
+    private final void executeOneTask(com.ved.tcp.RequestEntity,int)
+    private static final void startServer$lambda-0(com.ved.tcp.TcpServer,int)
+    public static final synthetic kotlin.Lazy access$getINSTANCE$delegate$cp()
+    public final com.ved.tcp.RequestManager getRequestTaskManager()
+    public final void setRequestTaskManager(com.ved.tcp.RequestManager)
+    public final void send(boolean,java.lang.String,int,kotlin.jvm.functions.Function2)
+    public final void stopTimer()
+    private boolean hasStart
+    private java.util.concurrent.ScheduledExecutorService heartbeatTimer
+    private java.util.TimerTask timerTask
+com.ved.tcp.RequestEntity:
+    public void <init>(boolean,java.lang.String,kotlin.jvm.functions.Function2)
+    public final java.lang.String getReqData()
+    public final boolean isFirst()
+    public final void setFirst(boolean)
+    public final void callBack(boolean,java.lang.String)
+    private final java.lang.String reqData
+    private kotlin.jvm.functions.Function2 callBack
+    private boolean isFirst
+com.ved.tcp.BuildConfig:
+    public static final java.lang.String LIBRARY_PACKAGE_NAME
+    public static final java.lang.String BUILD_TYPE
+    public static final int VERSION_CODE
+    public static final java.lang.String VERSION_NAME
+com.ved.tcp.TcpServer$startServer$1$1:
+    void <init>(com.ved.tcp.TcpServer)
+com.ved.tcp.RequestManager:
+    private final void doAddTask(java.util.ArrayList,com.ved.tcp.RequestEntity)
+    private final com.ved.tcp.RequestEntity getTaskManager()
+    private final com.ved.tcp.RequestEntity doGetTask(java.util.ArrayList)
+    public final void addTask(com.ved.tcp.RequestEntity)
+    public final com.ved.tcp.RequestEntity pollTask()
+    public final void cancelSameTask()
+com.ved.tcp.Request:
+    public static final com.ved.tcp.Request INSTANCE
+com.ved.tcp.TcpServer:
+    private com.ved.tcp.RequestManager requestTaskManager
+    public static final com.ved.tcp.TcpServer$Companion Companion
+    private static final kotlin.Lazy INSTANCE$delegate
+com.ved.tcp.BuildConfig:
+    public static final boolean DEBUG
+com.ved.tcp.RequestManager:
+    private final java.util.ArrayList firstTasks
+    private final java.lang.String taskLock
+    private final java.util.ArrayList tasks
