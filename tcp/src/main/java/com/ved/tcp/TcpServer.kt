@@ -311,8 +311,7 @@ class TcpServer private constructor() {
     private fun write(requestBeen: RequestEntity, data: String) {
         try {
             val finalData = if (requestBeen.crc) {
-                val crc = StringUtils.getCRC(data)
-                "$data$crc"
+                StringUtils.getCRC(data)
             } else {
                 data
             }
