@@ -118,7 +118,7 @@ class UdpServer private constructor() {
      */
     private fun prepareSendData(requestBeen: UdpRequestEntity, data: String): ByteArray {
         val d = if (requestBeen.crc) {
-            "${data}${StringUtils.getCRC(data, "2X")}"
+            "${data}${StringUtils.getCRC(data)}"
         } else {
             data
         }
