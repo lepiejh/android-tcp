@@ -8,7 +8,6 @@ import java.io.OutputStream
 import java.math.BigInteger
 import java.net.ServerSocket
 import java.net.Socket
-import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
